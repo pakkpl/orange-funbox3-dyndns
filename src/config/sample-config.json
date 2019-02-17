@@ -1,0 +1,13 @@
+{
+  "funboxAddress": "192.168.0.1",
+  "funboxUsername": "admin",
+  "funboxPassword": "admin",
+  "providers": [
+    {
+      "address": "www.ovh.com",
+      "host": "www.piercedbone.com",
+      "login": "piercedbone.com-username",
+      "password": "somePassword"
+    }
+  ]
+}
