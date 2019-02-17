@@ -11,6 +11,12 @@ let config, lastRemoteIp;
 function reloadConfig(callbackFunction) {
     let configPath = path.resolve(__dirname, 'config', 'config.json');
     if (!fs.existsSync(configPath)) {
+        let sampleConfigPathTarget = path.resolve(__dirname, 'config', 'sample-config.json');
+        if (!fs.existsSync(sampleConfigPathTarget)) {
+            let sampleConfigPathSource = path.resolve(__dirname, 'sample-config.json');
+            fs.copyFileSync(sampleConfigPathSource, sampleConfigPathTarget);
+        }
+
         callbackFunction('Missing config file. Move sample-config.json to config.json');
         return;
     }
