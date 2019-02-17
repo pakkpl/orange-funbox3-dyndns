@@ -8,6 +8,9 @@ COPY ./src/package-lock.json ./
 RUN npm install
 
 COPY ./src/config/sample-config.json ./config/
+
+VOLUME /usr/src/app/config
+
 COPY ./src/funbox.js ./
 COPY ./src/app.js ./
 
