@@ -47,7 +47,7 @@ function updateIp(ip, provider) {
             if (error) {
                 console.error(provider.host + ': ' + error)
             } else {
-                console.log(provider.host + ': ' + body)
+                console.log(provider.host + ': ' + body.trim())
             }
         });
 }
@@ -75,6 +75,10 @@ function main() {
 
                 if (lastRemoteIp === remoteIp) {
                     return
+                }
+
+                if (!remoteIp || remoteIp === '0.0.0.0') {
+                    return;
                 }
 
                 lastRemoteIp = remoteIp;
