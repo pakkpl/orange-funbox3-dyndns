@@ -8,7 +8,12 @@ const getRemoteIpAddress = require('./funbox').getRemoteIpAddress;
 
 let config, lastRemoteIp;
 
-function reloadConfig(callbackFunction) {
+function loadConfig(callbackFunction) {
+    if (config) {
+        callbackFunction();
+        return;
+    }
+
     let configPath = path.resolve(__dirname, 'config', 'config.json');
     if (!fs.existsSync(configPath)) {
         let sampleConfigPathTarget = path.resolve(__dirname, 'config', 'sample-config.json');
@@ -55,7 +60,7 @@ function updateIp(ip, provider) {
 
 function main() {
 
-    reloadConfig(function (error) {
+    loadConfig(function (error) {
         if (error) {
             console.error(error);
             return;
