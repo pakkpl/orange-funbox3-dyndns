@@ -1,5 +1,5 @@
 # Dynamic DNS for Orange Funbox 3.0
-Script that read remote IP address from Orange Funbox 3.0 modem and then post it to dynDNS provider(s).
+Script that read local IP address from Orange Funbox 3.0 modem and then post it to dynDNS provider(s).
 
 # Installation
 Run this commands

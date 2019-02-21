@@ -4,7 +4,7 @@ const request = require('request');
 const endOfLine = require('os').EOL;
 
 module.exports = {
-    getRemoteIpAddress: function (address, username, password, callbackFunction) {
+    getLocalIpAddress: function (address, username, password, callbackFunction) {
 
         let jar = request.jar();
 
@@ -59,7 +59,7 @@ module.exports = {
 
             try {
                 let jsonResponse = JSON.parse(response.body);
-                remoteIp = jsonResponse.status.ppp.ppp_data.RemoteIPAddress;
+                remoteIp = jsonResponse.status.ppp.ppp_data.LocalIPAddress;
             } catch (error) {
                 callbackFunction('Funbox getInfo error.' + endOfLine + error);
                 return;

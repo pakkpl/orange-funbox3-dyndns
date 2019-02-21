@@ -1,19 +1,16 @@
 'use strict';
 
+const request = require('request');
 const fs = require('fs');
 const path = require('path');
-const request = require('request');
 const endOfLine = require('os').EOL;
-const getRemoteIpAddress = require('./funbox').getRemoteIpAddress;
+const getLocalIpAddress = require('./funbox').getLocalIpAddress;
 
-let config, lastRemoteIp;
+let config;
+let lastRemoteIp = null;
+let mainLoopSlowdownCounter = 0;
 
 function loadConfig(callbackFunction) {
-    if (config) {
-        callbackFunction();
-        return;
-    }
-
     let configPath = path.resolve(__dirname, 'config', 'config.json');
     if (!fs.existsSync(configPath)) {
         let sampleConfigPathTarget = path.resolve(__dirname, 'config', 'sample-config.json');
@@ -58,42 +55,45 @@ function updateIp(ip, provider) {
 }
 
 
-function main() {
+function mainLoop() {
+    getLocalIpAddress(config.funboxAddress, config.funboxUsername, config.funboxPassword,
+        function (error, remoteIp) {
 
-    loadConfig(function (error) {
-        if (error) {
-            console.error(error);
-            return;
-        }
+            if (error) {
+                console.error(error);
+                mainLoopSlowdownCounter++;
+                setTimeout(mainLoop, config.intervalInSeconds * 1000 * mainLoopSlowdownCounter);
+                return;
+            }
 
-        getRemoteIpAddress(config.funboxAddress, config.funboxUsername, config.funboxPassword,
-            function (error, remoteIp) {
+            mainLoopSlowdownCounter = 0;
 
-                if (config.intervalInSeconds >= 0) {
-                    setTimeout(main, config.intervalInSeconds * 1000);
-                }
+            if (config.intervalInSeconds >= 0) {
+                setTimeout(mainLoop, config.intervalInSeconds * 1000);
+            }
 
-                if (error) {
-                    console.log(error);
-                    return;
-                }
+            if (lastRemoteIp === remoteIp) {
+                return
+            }
 
-                if (lastRemoteIp === remoteIp) {
-                    return
-                }
+            if (!remoteIp || remoteIp === '0.0.0.0') {
+                return;
+            }
 
-                if (!remoteIp || remoteIp === '0.0.0.0') {
-                    return;
-                }
 
-                lastRemoteIp = remoteIp;
+            for (let i = 0; i < config.providers.length; i++) {
+                updateIp(remoteIp, config.providers[i]);
+            }
 
-                for (let i = 0; i < config.providers.length; i++) {
-                    updateIp(remoteIp, config.providers[i]);
-                }
-            })
-    });
+            lastRemoteIp = remoteIp;
+        })
 }
 
-main();
+loadConfig(function (error) {
+    if (error) {
+        console.error(error);
+        return;
+    }
 
+    mainLoop();
+});
