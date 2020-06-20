@@ -54,7 +54,6 @@ function updateIp(ip, provider) {
         });
 }
 
-
 function mainLoop() {
     getLocalIpAddress(config.funboxAddress, config.funboxUsername, config.funboxPassword,
         function (error, remoteIp) {
@@ -80,6 +79,8 @@ function mainLoop() {
                 return;
             }
 
+            let publicIpPath = path.resolve(__dirname, 'config', 'public_ip');
+            fs.writeFileSync(publicIpPath, remoteIp, 'ascii');
 
             for (let i = 0; i < config.providers.length; i++) {
                 updateIp(remoteIp, config.providers[i]);
